@@ -17,13 +17,13 @@ import (
 	"github.com/thanakize/skill-api-kafka/api/skill"
 )
 
-func main(){
+func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
 	database := database.InitDatabase()
 	defer database.CloseDatabase()
-	
+
 	skillRepo := skill.InitSkillRepo(database.DB)
 	skillProducer := skill.CreateProducer("skill")
 	defer skillProducer.CloseProducer()
@@ -31,27 +31,26 @@ func main(){
 
 	r := gin.Default()
 	router.InitRoute(r, skillHandler)
-	
 
 	srv := http.Server{
-		Addr: ":" + os.Getenv("PORT"),
-		Handler:  r,
+		Addr:    ":" + os.Getenv("PRODUCER_PORT"),
+		Handler: r,
 	}
-	
-	go func ()  {
+
+	go func() {
 		<-ctx.Done()
 		fmt.Println("Shutting down...")
-		ctx, cancle := context.WithTimeout(context.Background(), time.Second * 5)
+		ctx, cancle := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancle()
 
 		if err := srv.Shutdown(ctx); err != nil {
-		if !errors.Is(err, http.ErrServerClosed){
-			log.Println(err)
-		}
+			if !errors.Is(err, http.ErrServerClosed) {
+				log.Println(err)
+			}
 		}
 
 	}()
-	if err := srv.ListenAndServe(); err != nil{
+	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
 	}
 }

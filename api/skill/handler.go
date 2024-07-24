@@ -74,6 +74,7 @@ func (h SkillHandler) PostSkillHandler(ctx *gin.Context) {
 		Data:   newSkill,
 	})
 }
+
 func (h SkillHandler) PutSkillHandler(ctx *gin.Context) {
 	key := ctx.Param("key")
 	var skill Skill
@@ -99,4 +100,128 @@ func (h SkillHandler) PutSkillHandler(ctx *gin.Context) {
 		Status: "success",
 		Data:   newSkill,
 	})
+}
+func (h SkillHandler) DeleteSkillHandler(ctx *gin.Context) {
+	key := ctx.Param("key")
+	_, err := h.producer.ProduceMessage("delete", Skill{}, key)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: "not be able to delete skill",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, DeleteResponse{
+		Status:  "success",
+		Message: "Skill deleted",
+	})
+}
+
+func (h SkillHandler) PatchNameSkillHandler(ctx *gin.Context) {
+	key := ctx.Param("key")
+	var skill Skill
+	if err := ctx.ShouldBindJSON(&skill); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+	newSkill, err := h.producer.ProduceMessage("patch", Skill{Name: skill.Name}, key)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: "not be able to update skill name",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, SkillResponse{
+		Status: "success",
+		Data:   newSkill,
+	})
+}
+func (h SkillHandler) PatchDescriptionSkillHandler(ctx *gin.Context) {
+	key := ctx.Param("key")
+	var skill Skill
+	if err := ctx.ShouldBindJSON(&skill); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+	newSkill, err := h.producer.ProduceMessage("patch", Skill{Description: skill.Description}, key)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: "not be able to update skill description",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, SkillResponse{
+		Status: "success",
+		Data:   newSkill,
+	})
+}
+func (h SkillHandler) PatchLogoSkillHandler(ctx *gin.Context) {
+	key := ctx.Param("key")
+	var skill Skill
+	if err := ctx.ShouldBindJSON(&skill); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+	newSkill, err := h.producer.ProduceMessage("patch", Skill{Logo: skill.Logo}, key)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: "not be able to update skill logo",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, SkillResponse{
+		Status: "success",
+		Data:   newSkill,
+	})
+}
+func (h SkillHandler) PatchTagsSkillHandler(ctx *gin.Context) {
+	key := ctx.Param("key")
+	var skill Skill
+	if err := ctx.ShouldBindJSON(&skill); err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	newSkill, err := h.producer.ProduceMessage("patch", Skill{Tags: skill.Tags}, key)
+
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(400, ErrorResponse{
+			Status:  "error",
+			Message: "not be able to update skill tags",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, SkillResponse{
+		Status: "success",
+		Data:   newSkill,
+	})
+
 }

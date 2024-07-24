@@ -24,19 +24,6 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - 8080:8080
-    depends_on:
-      - "kafka"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: kafka
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      DYNAMIC_CONFIG_ENABLED: "true" # not necessary, added for tests
-      KAFKA_CLUSTERS_0_AUDIT_TOPICAUDITENABLED: "true"
-      KAFKA_CLUSTERS_0_AUDIT_CONSOLEAUDITENABLED: "true"
   database:
     image: postgres:16
     environment:
@@ -48,3 +35,31 @@ services:
       - "5432:5432"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d/
+  api:
+    image: ghcr.io/thanakise/api_kafka_sarama:latest
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - kafka
+    restart: always
+    environment:
+      - BROKER=${BROKER}
+      - PRODUCER_PORT=${PRODUCER_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+
+  consumer:
+    image: ghcr.io/thanakise/consumer:latest
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    restart: always
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      BROKER: kafka:9092
+      DATABASE_URL: ${DATABASE_URL}
+      TOPICS: ${TOPICS}

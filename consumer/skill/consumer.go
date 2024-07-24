@@ -11,22 +11,24 @@ import (
 type Consumer struct {
 	SaramaConsumer          sarama.Consumer
 	SaramaPartitionConsumer sarama.PartitionConsumer
-	Handler                 Handler
+	Handler                 HandlerInterface
 }
 
-func NewConsumer(handler *Handler, brokers []string, topics string) *Consumer {
+func NewConsumer(handler HandlerInterface, brokers []string, topics string) *Consumer {
 	consumer, err := sarama.NewConsumer(brokers, sarama.NewConfig())
+
 	if err != nil {
-		panic(err)
+		panic("error try to new consumer" + err.Error())
 	}
+
 	partitionConsumer, err := consumer.ConsumePartition(topics, 0, sarama.OffsetNewest)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	return &Consumer{
 		SaramaConsumer:          consumer,
 		SaramaPartitionConsumer: partitionConsumer,
-		Handler:                 *handler,
+		Handler:                 handler,
 	}
 }
 

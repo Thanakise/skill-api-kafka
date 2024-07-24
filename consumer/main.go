@@ -19,6 +19,7 @@ var (
 )
 
 func init() {
+	println(broker, topics)
 	if len(broker) == 0 {
 		panic("no Kafka bootstrap brokers defined, please set the -brokers flag")
 	}
