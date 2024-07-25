@@ -8,11 +8,11 @@ import (
 )
 
 type SkillHandler struct {
-	skillRepo SkillReposiory
-	producer  *Producer
+	skillRepo SkillRepositoryInterface
+	producer  ProducerInterface
 }
 
-func NewHandler(SkillRepo SkillReposiory, producer *Producer) *SkillHandler {
+func NewHandler(SkillRepo SkillRepositoryInterface, producer ProducerInterface) *SkillHandler {
 	return &SkillHandler{
 		skillRepo: SkillRepo,
 		producer:  producer,
@@ -33,8 +33,8 @@ func (h SkillHandler) GetSkillsHandler(ctx *gin.Context) {
 		Status: "success",
 		Data:   skill,
 	})
-
 }
+
 func (h SkillHandler) GetSkillHandler(ctx *gin.Context) {
 	key := ctx.Param("key")
 	skill, err := h.skillRepo.GetSkill(key)

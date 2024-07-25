@@ -25,8 +25,9 @@ func main() {
 	defer database.CloseDatabase()
 
 	skillRepo := skill.InitSkillRepo(database.DB)
+	defer skill.CloseDB(skillRepo)
 	skillProducer := skill.CreateProducer("skill")
-	defer skillProducer.CloseProducer()
+	defer skill.CloseProducer(skillProducer)
 	skillHandler := skill.NewHandler(skillRepo, skillProducer)
 
 	r := gin.Default()

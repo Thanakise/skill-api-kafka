@@ -36,7 +36,7 @@ services:
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d/
   api:
-    image: ghcr.io/thanakise/api_kafka_sarama:latest
+    image: ghcr.io/thanakise/api_kafka_sarama:1.0
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -51,7 +51,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
 
   consumer:
-    image: ghcr.io/thanakise/consumer:latest
+    image: ghcr.io/thanakise/consumer:1.0
     build:
       context: ./consumer
       dockerfile: Dockerfile

@@ -9,11 +9,11 @@ type Skill struct {
 }
 
 type SkillResponse struct {
-	Status string `json:"message"`
+	Status string `json:"status"`
 	Data   Skill  `json:"data"`
 }
 type SkillsResponse struct {
-	Status string  `json:"message"`
+	Status string  `json:"status"`
 	Data   []Skill `json:"data"`
 }
 type ErrorResponse struct {

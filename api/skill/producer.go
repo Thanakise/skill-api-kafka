@@ -28,6 +28,10 @@ type Producer struct {
 	topic  string
 }
 
+type ProducerInterface interface {
+	ProduceMessage(key string, skill Skill, skillKey string) (Skill, error)
+}
+
 func CreateProducer(topic string) *Producer {
 	config := sarama.NewConfig()
 	config.Producer.Partitioner = sarama.NewRoundRobinPartitioner
@@ -42,7 +46,7 @@ func CreateProducer(topic string) *Producer {
 	}
 }
 
-func (producer Producer) CloseProducer() {
+func CloseProducer(producer *Producer) {
 	if err := producer.sarama.Close(); err != nil {
 		log.Fatalln(err)
 	}
