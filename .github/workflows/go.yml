@@ -31,4 +31,7 @@ jobs:
     - name: Build the Docker image
       run: make build
     - name: Push the Docker image
-      run: make GITHUB_USERNAME=${{ secrets.USERNAME }} GITHUB_TOKEN=${{ secrets.TOKEN }} push
+      env:
+        GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: make push
