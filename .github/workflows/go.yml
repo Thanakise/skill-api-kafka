@@ -5,20 +5,20 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test:
-      runs-on: ubuntu-latest
-      steps:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.5'
-          
+          go-version: "1.22.5"
+
       - name: Api Test
         run: |
           cd api
@@ -27,11 +27,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: make build
-    - name: Push the Docker image
-      env:
-        GITHUB_USERNAME: ${{ secrets.USERNAME }}
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
-      run: make push
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          PRODUCER_PORT: ${{ env.PRODUCER_PORT }}
+          PORT: ${{ env.PORT }}
+          BROKER: ${{ env.BROKER }}
+          TOPICS: ${{ env.TOPICS }}
+        run: make build
+      - name: Push the Docker image
+        env:
+          GITHUB_USERNAME: ${{ secrets.USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: make push
